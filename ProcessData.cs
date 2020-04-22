@@ -57,8 +57,52 @@ namespace SprintData
 
         public void DisplayInformation()
         {
-            Console.WriteLine("Stories at start: " + startRecs.Count());
-            Console.WriteLine("Stories at end  : " + endRecs.Count());
+            Console.WriteLine("Stories at start: {0}, points {1}", startRecs.Count(), startRecs.Sum(p =>p.points));
+            Console.WriteLine();
+
+            var closedStories = endRecs.FindAll(x => x.state == "Closed").ToList();
+            Console.WriteLine("Stories at end : {0}, points {1}",
+                    endRecs.Count(),
+                    endRecs.Sum(p => p.points));
+
+            Console.WriteLine("Completed {0}, points {1}",
+                    closedStories.Count(),
+                    closedStories.Sum(p => p.points));
+
+            var removed = 0;
+            var removedPoints = 0.0;
+            var atEnd = 0;
+            foreach (var item in startRecs)
+            {
+                if (endRecs.Find(i => item.issueID == i.issueID) != null)
+                {
+                    atEnd++;
+                }
+                else
+                {
+                    removed++;
+                    removedPoints += item.points;
+                }
+            }
+
+            Console.WriteLine("Removed {0}, points {1}", removed, removedPoints);
+
+            var addedCount = 0;
+            var addedPoints = 0.0;
+            foreach (var item in endRecs)
+            {
+                if (startRecs.Find(i => item.issueID == i.issueID) == null)
+                {
+                    addedCount++;
+                    addedPoints += item.points;
+                }
+            }
+            Console.WriteLine("Added {0}, points {1}", addedCount, addedPoints);
+
+            if (endRecs.Count() != startRecs.Count() - removed + addedCount)
+            {
+                Console.WriteLine("*************  Data is incorrect ************");
+            }
         }
     }
 }
