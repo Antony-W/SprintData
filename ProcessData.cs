@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualBasic.FileIO;
+using System.Collections.Generic;
 
 namespace SprintData
 {
@@ -49,6 +50,7 @@ namespace SprintData
                     record.issueID = fields[0];//.ToString();
                     record.state = fields[3];
                     record.points = Convert.ToDouble(fields[9]);
+                    record.tags = GetTags(fields[6]);
                     recs.Add(record);
                 }
             }
@@ -103,6 +105,16 @@ namespace SprintData
             {
                 Console.WriteLine("*************  Data is incorrect ************");
             }
+        }
+
+        private string[] GetTags(string tags)
+        {
+            var tagList = new string[] { };
+            if (tags.Length > 0)
+            {
+                tagList = tags.Split(';');
+            }
+            return tagList;
         }
     }
 }

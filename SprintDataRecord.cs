@@ -10,6 +10,8 @@ namespace SprintData
         public string state;
 
         public double points;
+
+        public string[] tags;
     }
 
     public class SprintDataCollection : List<SprintDataRecord>
