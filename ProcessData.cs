@@ -36,6 +36,7 @@ namespace SprintData
 
         public bool LoadDataFromFile(string fileName, out SprintDataCollection recs)
         {
+            Console.WriteLine($"Parsing {fileName}");
             recs = new SprintDataCollection();
             using (TextFieldParser parser = new TextFieldParser(fileName))
             {
@@ -51,26 +52,46 @@ namespace SprintData
                     record.state = fields[3];
                     record.points = Convert.ToDouble(fields[9]);
                     record.tags = GetTags(fields[6]);
-                    recs.Add(record);
+                    if (!record.tags.Contains("BAT"))
+                    {
+                        recs.Add(record);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Omitting story {record.issueID} because of BAT tag");
+                    }
                 }
             }
+            Console.WriteLine();
             return true;
         }
 
         public void DisplayInformation()
         {
-            Console.WriteLine("Stories at start: {0}, points {1}", startRecs.Count(), startRecs.Sum(p =>p.points));
+            Console.WriteLine("Non-BAT Stories at start: {0}, points {1}", startRecs.Count(), startRecs.Sum(p =>p.points));
             Console.WriteLine();
 
-            var closedStories = endRecs.FindAll(x => x.state == "Closed").ToList();
-            Console.WriteLine("Stories at end : {0}, points {1}",
+            Console.WriteLine("Non-BAT Stories at end : {0}, points {1}",
                     endRecs.Count(),
                     endRecs.Sum(p => p.points));
 
-            Console.WriteLine("Completed {0}, points {1}",
-                    closedStories.Count(),
-                    closedStories.Sum(p => p.points));
+            Console.WriteLine();
+            Console.WriteLine("Non-BAT added:");
+            var addedCount = 0;
+            var addedPoints = 0.0;
+            foreach (var item in endRecs)
+            {
+                if (startRecs.Find(i => item.issueID == i.issueID) == null)
+                {
+                    addedCount++;
+                    addedPoints += item.points;
+                    Console.WriteLine($"   {item.issueID}");
+                }
+            }
+            Console.WriteLine("Total {0}, points {1}", addedCount, addedPoints);
 
+            Console.WriteLine();
+            Console.WriteLine("Non-BAT removed:");
             var removed = 0;
             var removedPoints = 0.0;
             var atEnd = 0;
@@ -84,22 +105,16 @@ namespace SprintData
                 {
                     removed++;
                     removedPoints += item.points;
+                    Console.WriteLine($"   {item.issueID}");
                 }
             }
+            Console.WriteLine("Total {0}, points {1}", removed, removedPoints);
 
-            Console.WriteLine("Removed {0}, points {1}", removed, removedPoints);
-
-            var addedCount = 0;
-            var addedPoints = 0.0;
-            foreach (var item in endRecs)
-            {
-                if (startRecs.Find(i => item.issueID == i.issueID) == null)
-                {
-                    addedCount++;
-                    addedPoints += item.points;
-                }
-            }
-            Console.WriteLine("Added {0}, points {1}", addedCount, addedPoints);
+            Console.WriteLine();
+            var closedStories = endRecs.FindAll(x => x.state == "Closed").ToList();
+            Console.WriteLine("Non-BAT completed {0}, points {1}",
+                    closedStories.Count(),
+                    closedStories.Sum(p => p.points));
 
             if (endRecs.Count() != startRecs.Count() - removed + addedCount)
             {
