@@ -36,6 +36,7 @@ namespace SprintData
 
         public bool LoadDataFromFile(string fileName, out SprintDataCollection recs)
         {
+            bool processingEndRecs = startRecs != null;
             Console.WriteLine($"Parsing {fileName}");
             recs = new SprintDataCollection();
             using (TextFieldParser parser = new TextFieldParser(fileName))
@@ -47,18 +48,32 @@ namespace SprintData
                 {
                     //Processing row
                     string[] fields = parser.ReadFields();
-                    var record = new SprintDataRecord();
-                    record.issueID = fields[0];//.ToString();
-                    record.state = fields[3];
-                    record.points = Convert.ToDouble(fields[9]);
-                    record.tags = GetTags(fields[6]);
+                    var record = new SprintDataRecord
+                    {
+                        issueID = fields[0],
+                        state = fields[3],
+                        points = Convert.ToDouble(fields[9]),
+                        tags = GetTags(fields[6])
+                    };
                     if (!record.tags.Contains("BAT"))
                     {
                         recs.Add(record);
                     }
                     else
                     {
-                        Console.WriteLine($"Omitting story {record.issueID} because of BAT tag");
+                        Console.Write($"Omitting story {record.issueID} because of BAT tag");
+
+                        // If a record is labelled BAT part way through a sprint, it will
+                        // only get removed from the end list. It should also be removed
+                        // from the start list.
+                        if (processingEndRecs)
+                        {
+                            if (startRecs.RemoveAll(r => r.issueID == record.issueID) > 0)
+                            {
+                                Console.Write($" and removing unlabelled BAT entry from start list");
+                            }
+                        }
+                        Console.WriteLine();
                     }
                 }
             }
@@ -128,6 +143,10 @@ namespace SprintData
             if (tags.Length > 0)
             {
                 tagList = tags.Split(';');
+                for (var i = 0; i < tagList.Length; i++)
+                {
+                    tagList[i] = tagList[i].Trim();
+                }
             }
             return tagList;
         }
