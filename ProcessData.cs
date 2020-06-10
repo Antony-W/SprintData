@@ -12,7 +12,6 @@ namespace SprintData
         string endFile;
 
         SprintDataCollection startRecs;
-
         SprintDataCollection endRecs;
 
         public ProcessData(string start, string end)
@@ -135,6 +134,19 @@ namespace SprintData
             {
                 Console.WriteLine("*************  Data is incorrect ************");
             }
+
+            // Unit test data
+            var completed = endRecs.Count(r => r.tags.Contains("ALT-UnitTest-Completed"));
+            var partial = endRecs.Count(r => r.tags.Contains("ALT-UnitTest-Partial"));
+            var notRequired = endRecs.Count(r => r.tags.Contains("ALT-UnitTest-NotRequired"));
+            var total = completed + partial + notRequired;
+
+            double Percent(int v, int t) => Convert.ToDouble(v) / Convert.ToDouble(t) * 100;
+
+            Console.WriteLine();
+            Console.WriteLine($"Unit test data: Complete : {completed} ({Percent(completed, total):0.00}%)");
+            Console.WriteLine($"Unit test data: Partial : {partial} ({Percent(partial, total):0.00}%)");
+            Console.WriteLine($"Unit test data: Not Required : {notRequired} ({Percent(notRequired, total):0.00}%)");
         }
 
         private string[] GetTags(string tags)
