@@ -7,6 +7,8 @@ namespace SprintData
     {
         public string issueID;
 
+        public string title;
+
         public string state;
 
         public double points;

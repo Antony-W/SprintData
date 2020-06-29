@@ -50,6 +50,7 @@ namespace SprintData
                     var record = new SprintDataRecord
                     {
                         issueID = fields[0],
+                        title = fields[2],
                         state = fields[3],
                         points = Convert.ToDouble(fields[9]),
                         tags = GetTags(fields[6])
@@ -99,7 +100,7 @@ namespace SprintData
                 {
                     addedCount++;
                     addedPoints += item.points;
-                    Console.WriteLine($"   {item.issueID}");
+                    Console.WriteLine($"   {item.issueID} : {item.title}");
                 }
             }
             Console.WriteLine("Total {0}, points {1}", addedCount, addedPoints);
