@@ -29,56 +29,71 @@ namespace SprintData
             }
             else
             {
-                Console.WriteLine("No data to process.");
+                Console.WriteLine("Unable to load all data for processing.");
             }
         }
 
         public bool LoadDataFromFile(string fileName, out SprintDataCollection recs)
         {
+            bool success = false;
             bool processingEndRecs = startRecs != null;
             Console.WriteLine($"Parsing {fileName}");
             recs = new SprintDataCollection();
-            using (TextFieldParser parser = new TextFieldParser(fileName))
+            try
             {
-                parser.TextFieldType = FieldType.Delimited;
-                parser.SetDelimiters(",");
-                parser.ReadLine();
-                while (!parser.EndOfData)
-                {
-                    //Processing row
-                    string[] fields = parser.ReadFields();
-                    var record = new SprintDataRecord
-                    {
-                        issueID = fields[0],
-                        title = fields[2],
-                        state = fields[3],
-                        points = Convert.ToDouble(fields[9]),
-                        tags = GetTags(fields[6])
-                    };
-                    if (!record.tags.Contains("BAT"))
-                    {
-                        recs.Add(record);
-                    }
-                    else
-                    {
-                        Console.Write($"Omitting story {record.issueID} because of BAT tag");
 
-                        // If a record is labelled BAT part way through a sprint, it will
-                        // only get removed from the end list. It should also be removed
-                        // from the start list.
-                        if (processingEndRecs)
+                using (TextFieldParser parser = new TextFieldParser(fileName))
+                {
+                    parser.TextFieldType = FieldType.Delimited;
+                    parser.SetDelimiters(",");
+                    parser.ReadLine();
+                    while (!parser.EndOfData)
+                    {
+                        //Processing row
+                        string[] fields = parser.ReadFields();
+                        var record = new SprintDataRecord
                         {
-                            if (startRecs.RemoveAll(r => r.issueID == record.issueID) > 0)
-                            {
-                                Console.Write($" and removing unlabelled BAT entry from start list");
-                            }
+                            issueID = fields[0],
+                            title = fields[2],
+                            state = fields[3],
+                            points = Convert.ToDouble(fields[9]),
+                            tags = GetTags(fields[6])
+                        };
+                        if (!record.tags.Contains("BAT"))
+                        {
+                            recs.Add(record);
                         }
-                        Console.WriteLine();
+                        else
+                        {
+                            Console.Write($"Omitting story {record.issueID} because of BAT tag");
+
+                            // If a record is labelled BAT part way through a sprint, it will
+                            // only get removed from the end list. It should also be removed
+                            // from the start list.
+                            if (processingEndRecs)
+                            {
+                                if (startRecs.RemoveAll(r => r.issueID == record.issueID) > 0)
+                                {
+                                    Console.Write($" and removing unlabelled BAT entry from start list");
+                                }
+                            }
+
+                            Console.WriteLine();
+                        }
                     }
                 }
+
+                Console.WriteLine();
+                success = true;
             }
-            Console.WriteLine();
-            return true;
+            catch (Exception e)
+            {
+                Console.WriteLine($"Exception processing {fileName}");
+                Console.WriteLine(e.Message);
+                success = false;
+            }
+
+            return success;
         }
 
         public void DisplayInformation()
