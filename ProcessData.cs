@@ -120,7 +120,7 @@ namespace SprintData
                 {
                     removed++;
                     removedPoints += item.points;
-                    Console.WriteLine($"   {item.issueID}");
+                    Console.WriteLine($"   {item.issueID} : {item.title}");
                 }
             }
             Console.WriteLine("Total {0}, points {1}", removed, removedPoints);
