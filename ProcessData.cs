@@ -152,7 +152,7 @@ namespace SprintData
             }
 
             // Unit test data
-            var completed = endRecs.Count(r => r.tags.Contains("ALT-UnitTest-Completed"));
+            var completed = endRecs.Count(r => r.tags.Contains("ALT-UnitTest-Complete"));
             var partial = endRecs.Count(r => r.tags.Contains("ALT-UnitTest-Partial"));
             var notRequired = endRecs.Count(r => r.tags.Contains("ALT-UnitTest-NotRequired"));
             var total = completed + partial + notRequired;
