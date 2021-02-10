@@ -17,8 +17,16 @@ namespace SprintData
             }
             else
             {
-                var pd = new ProcessData(arguments[1], arguments[2]);
-                pd.Start();
+                if (arguments.Length == 3)
+                {
+                    var pd = new ProcessData(arguments[1], arguments[2]);
+                    pd.Start();
+                }
+                else
+                {
+                    var pd = new ProcessData(arguments[1], arguments[2], arguments[3]);
+                    pd.Start();
+                }
             }
         }
     }

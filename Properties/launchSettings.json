@@ -2,7 +2,7 @@
   "profiles": {
     "SprintData": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\antony.walmsley\\OneDrive - Thermo Fisher Scientific\\Sprint reports\\testxxxxstart.csv\" \"C:\\Users\\antony.walmsley\\OneDrive - Thermo Fisher Scientific\\Sprint reports\\testend.csv\""
+      "commandLineArgs": "\"c:\\Users\\antony.walmsley\\OneDrive - Thermo Fisher Scientific\\Sprint reports\\2021-02_start.csv\" \"c:\\Users\\antony.walmsley\\OneDrive - Thermo Fisher Scientific\\Sprint reports\\2021-02_end.csv\" \"c:\\Users\\antony.walmsley\\OneDrive - Thermo Fisher Scientific\\Sprint reports\\2021-01_end.csv\""
     }
   }
 }

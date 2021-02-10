@@ -10,20 +10,31 @@ namespace SprintData
     {
         string startFile;
         string endFile;
+        string previousFile;
 
         SprintDataCollection startRecs;
         SprintDataCollection endRecs;
+        SprintDataCollection previousRecs;
 
-        public ProcessData(string start, string end)
+        public ProcessData(string start, string end, string previous = null)
         {
             startFile = start;
             endFile = end;
+            previousFile = previous;
         }
 
         public void Start()
         {
-            if (LoadDataFromFile(startFile, out startRecs) &&
-                LoadDataFromFile(endFile, out endRecs))
+            var startFileLoaded = LoadDataFromFile(startFile, out startRecs);
+            var endFileLoaded = LoadDataFromFile(endFile, out endRecs);
+            var previousFileLoaded = false;
+
+            if (previousFile != null)
+            {
+                previousFileLoaded = LoadDataFromFile(previousFile, out previousRecs);
+            }
+
+            if (startFileLoaded && endFileLoaded && (previousFile== null || previousFile != null && previousFileLoaded))
             {
                 DisplayInformation();
             }
@@ -98,6 +109,25 @@ namespace SprintData
 
         public void DisplayInformation()
         {
+            if (previousRecs != null)
+            {
+                Console.WriteLine("Carried forward: ");
+                var prevCount = 0;
+                var prevPoints = 0.0;
+                foreach (var item in startRecs)
+                {
+                    if (previousRecs.Find(i => item.issueID == i.issueID) != null)
+                    {
+                        prevCount++;
+                        prevPoints += item.points;
+                        Console.WriteLine($"   {item.issueID} : {item.title}");
+                    }
+                }
+
+                Console.WriteLine("Total {0}, points {1}", prevCount, prevPoints);
+                Console.WriteLine();
+            }
+
             Console.WriteLine("Non-BAT Stories at start: {0}, points {1}", startRecs.Count(), startRecs.Sum(p =>p.points));
             Console.WriteLine();
 
